@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Audio experiment</title>
+    <link rel="stylesheet" href="./stylesheets/main.css">
+</head>
+
+<body>
+    <h1>Audio experiment</h1>
+
+    <p>This is just a little experiment :)</p>
+
+    <audio src="audio/example1.mp3"></audio>
+
+    <fieldset id="controls-container" class="borderbox flex">
+        <legend>Controls</legend>
+        <fieldset class="borderbox flex flex40">
+            <legend>Microphone</legend>
+            <button id="startMicButton" class="flex40" onclick="startMic();">Activate Microphone</button>
+            <button id="stopMicButton" class="flex40" onclick="stopMic();" disabled>Stop Microphone</button>
+        </fieldset>
+        <fieldset class="borderbox flex flex40">
+            <legend>Audio file</legend>
+            <button id="startFileButton" class="flex40" onclick="startFile();">Start Audio File</button>
+            <button id="stopFileButton" class="flex40" onclick="stopFile();" disabled>Stop Audio File</button>
+        </fieldset>
+    </fieldset>
+    
+    <fieldset id="output-container" class="borderbox">
+        <legend>Output</legend>
+        <svg id="svg-volume" viewBox="0 0 1000 10" xmlns="http://www.w3.org/2000/svg">
+
+        </svg>
+    </fieldset>
+
+
+    <!-- The magic begins here -->
+    <script>
+
+        // Setup
+
+        let context, analyser, source
+        let isplaying = false;
+        const databuffer = new Float32Array(1024)
+        const svg_volume_elem = document.querySelector("#svg-volume")
+
+        function setUpAudioContext() {
+            context = new AudioContext();
+            analyser = context.createAnalyser()
+            analyser.ftSize = 1024
+        }
+        
+        // Utils
+
+        function setButtonStates(states) {
+            // Input: [[id, state], [id, state], ...]
+            states.forEach(state => {
+                document.querySelector(`#${state[0]}`).disabled = !state[1];
+            })
+        }
+
+        function stopAudio() {
+            isplaying = false;
+            source.disconnect();
+
+            setButtonStates([["startMicButton", true], ["stopMicButton", false], ["startFileButton", true], ["stopFileButton", false]])
+
+            clearFrame();
+        }
+
+        // Button actions
+
+        async function startMic() {
+            setUpAudioContext()
+
+            setButtonStates([["startMicButton", false], ["stopMicButton", true], ["startFileButton", false], ["stopFileButton", false]])
+
+            const micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+            source = context.createMediaStreamSource(micStream);
+
+            // Amplify the input volume
+            const gainNode = new GainNode(context, { gain: 2 })
+            console.log(gainNode)
+            source.connect(gainNode)
+            gainNode.connect(analyser)
+
+            isplaying = true;
+            updateFrame()
+        }
+
+        function stopMic() {
+            stopAudio();
+        }
+
+        function startFile() {
+            setUpAudioContext()
+
+            setButtonStates([["startMicButton", false], ["stopMicButton", false], ["startFileButton", false], ["stopFileButton", true]])
+
+            const myAudio = document.querySelector('audio');
+            myAudio.play()
+            source = context.createMediaElementSource(myAudio);
+            source.connect(analyser)
+            analyser.connect(context.destination)
+            myAudio.currentTime = 37;
+
+            isplaying = true;
+            updateFrame()
+        }
+
+        function stopFile() {
+            stopAudio();
+
+            const myAudio = document.querySelector('audio');
+            myAudio.pause();
+            myAudio.currentTime = 0;
+        }
+
+        // Visualization
+
+        // The smoothing factor is used to make the visible volume go back a little bit slower when the volume suddenly decreases.
+        let smoothing_factor = 0.9;
+
+        // The value from the latest function call. (used for smoothing)
+        let latest_value = 0;
+
+        function showData(data) {
+            svg_volume_elem.innerHTML = "";
+
+            let sum = 0;
+            data.forEach(d => sum += d);
+            latest_value = Math.max(sum, latest_value*smoothing_factor)
+            
+            for (let i = 0; i < Math.min(latest_value*8, 90); i++) {
+                let circle = document.createElement("circle");
+
+                circle.setAttribute("fill", `hsl(${Math.max(130-(i*3), 0)},100%,35%)`)
+                circle.setAttribute("r", 5)
+                circle.setAttribute("cx", 11*(i) + 5)
+                circle.setAttribute("cy", 5)
+                svg_volume_elem.appendChild(circle);
+            }
+
+            // Without this line, JS doesn't rerender the SVG. I don't know why neither understand why this line changes anything.
+            svg_volume_elem.innerHTML += "";
+
+            // Debug
+            // outputelem.innerHTML += `<p><br>${data.join("<br>")}<br><br>${Math.max(...data)}<br>${sum}<p>`;
+        }
+
+        function updateFrame() {
+            if (isplaying) {
+                analyser.getFloatTimeDomainData(databuffer)
+                data = databuffer.slice(0, 10);
+
+                showData(data);
+
+                // Let JS know that we want to run this function when the next frame is rendered
+                requestAnimationFrame(updateFrame);
+            }
+        }
+
+        function clearFrame() {
+            svg_volume_elem.innerHTML = "";
+            latest_value = 0;
+        }
+
+
+        window.onload = function() {
+            setButtonStates([["startMicButton", true], ["stopMicButton", false], ["startFileButton", true], ["stopFileButton", false]])
+        }
+
+        // TODO:
+        // Replace buttons with icons -> mic/stop icon / play/stop icon
+        // Add slider for smoothing factor
+        // Add slider for microphone gain
+        // Add decoration around circles or use another shape
+        // Add more audio examples -> add select box for audio files
+        // Add an option to use own audio file: https://stackoverflow.com/questions/43710173/upload-and-play-audio-file-js#43710640
+
+    </script>
+</body>
+
+</html>

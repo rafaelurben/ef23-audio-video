@@ -1,0 +1,57 @@
+/* Stylesheet */
+
+a[href] {
+    color: white;
+}
+
+a[href]:hover {
+    color: #afafaf;
+}
+
+button, a.btn {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    transition-duration: 0.3s;
+    padding: 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border: none;
+    border-radius: 3px;
+    min-width: 11em;
+}
+
+body {
+    padding: 1em;
+    max-width: 1000px;
+    margin: auto;
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+    color: white;
+}
+
+html {
+    background-color: rgb(55, 55, 55);
+}
+
+fieldset {
+    border-radius: 5px;
+}
+
+.flex {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.flex40 {
+    flex: 40%;
+    margin: 0.5em;
+}
+
+#controls-container {
+    padding: 0 0.5em 0.5em 0.5em;
+}
+
+#svg-volume {
+    width: 100%;
+}

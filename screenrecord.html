@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Screen recording experiment</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="./stylesheets/main.css">
+</head>
+
+<body>
+    <h1>Screen recording experiment</h1>
+    <button id="btn-record-start">Start recording</button>
+    <button id="btn-record-stop" disabled>Stop recording</button>
+    <button id="btn-download" disabled onclick="downloadurlelem.click();">Save recording</button>
+    <a style="display: none;" id="downloadurl"></a>
+    <br><br>
+    <video id="videoplayer" width="600px" controls></video>
+    <script>
+        let recordbtn = document.querySelector("#btn-record-start")
+        let stopbtn = document.querySelector("#btn-record-stop")
+        let downloadbtn = document.querySelector("#btn-download")
+        let downloadurlelem = document.querySelector("#downloadurl")
+        let videoplayer = document.querySelector("#videoplayer")
+
+        let isRecording = false;
+
+        recordbtn.addEventListener("click", async function () {
+            recordbtn.disabled = true;
+            isRecording = true;
+            stopbtn.disabled = true;
+            downloadbtn.disabled = true;
+
+            let stream = await navigator.mediaDevices.getDisplayMedia({
+                video: true
+            })
+
+            // needed for better browser support  
+            const mime = MediaRecorder.isTypeSupported("video/webm; codecs=vp9")
+                ? "video/webm; codecs=vp9"
+                : "video/webm";
+            
+            let mediaRecorder = new MediaRecorder(stream, {
+                mimeType: mime
+            })
+
+            let chunks = []
+
+            mediaRecorder.addEventListener('dataavailable', function (e) {
+                chunks.push(e.data)
+            })
+
+            mediaRecorder.addEventListener('stop', function () {
+                let blob = new Blob(chunks, {
+                    type: chunks[0].type
+                })
+                let url = URL.createObjectURL(blob)
+                videoplayer.src = url
+
+                downloadurlelem.href = url;
+                downloadurlelem.download = "screenrecording.webm";
+               
+                isRecording = false;
+                recordbtn.disabled = false;
+                stopbtn.disabled = true;
+                downloadbtn.disabled = false;
+            })
+
+            
+            // Start the recording  
+            mediaRecorder.start()
+            stopbtn.onclick = async function () {
+                await mediaRecorder.stop();
+            }
+            stopbtn.disabled = false;
+        })
+
+        // TODO:
+        // Seperate window selection and recording start
+        // Allow to store multiple recordings
+        // Add recording timer
+    </script>
+</body>
+
+</html>
