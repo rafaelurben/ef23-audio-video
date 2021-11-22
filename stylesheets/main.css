@@ -45,11 +45,13 @@ fieldset.borderbox {
 
 .flex40 {
     flex: 40%;
-    margin: 0.5em;
 }
 
 .flex100 {
     flex: 100%;
+}
+
+.m05 {
     margin: 0.5em;
 }
 

@@ -16,22 +16,27 @@
 
     <fieldset id="controls-container" class="borderbox flex">
         <legend>Controls</legend>
-        <fieldset class="borderbox flex flex40">
+        <fieldset class="borderbox flex flex40 m05">
             <legend>Microphone</legend>
-            <button id="startMicButton" class="flex40" onclick="startMic();">Activate Microphone</button>
-            <button id="stopMicButton" class="flex40" onclick="stopMic();" disabled>Stop Microphone</button>
+            <button id="startMicButton" class="flex40 m05" onclick="startMic();">Activate Microphone</button>
+            <button id="stopMicButton" class="flex40 m05" onclick="stopMic();" disabled>Stop Microphone</button>
         </fieldset>
-        <fieldset class="borderbox flex flex40">
+        <fieldset class="borderbox flex flex40 m05">
             <legend>Audio file</legend>
-            <button id="startFileButton" class="flex40" onclick="startFile();">Start Audio File</button>
-            <button id="stopFileButton" class="flex40" onclick="stopFile();" disabled>Stop Audio File</button>
+            <button id="startFileButton" class="flex40 m05" onclick="startFile();">Start Audio File</button>
+            <button id="stopFileButton" class="flex40 m05" onclick="stopFile();" disabled>Stop Audio File</button>
         </fieldset>
-        <fieldset class="borderbox flex flex100">
-            <legend>Options</legend>
-            <fieldset class="borderbox flex">
+        <fieldset class="borderbox flex flex100 m05">
+            <legend>General</legend>
+            <fieldset class="borderbox flex m05">
                 <legend>Smoothing factor</legend>
                 <input id="smoothing_factor_slider" type="range" min="0" max="0.99" step="0.01" value="0.9">
-                <span id="smoothing_factor_display" style="width: 3em;text-align: center;">0.9</span>
+                <span id="smoothing_factor_display" style="width: 3em; text-align: center;">0.9</span>
+            </fieldset>
+            <fieldset class="borderbox flex m05">
+                <legend>Gain</legend>
+                <input id="gain_slider" type="range" min="0" max="10" step="0.1" value="2">
+                <span id="gain_display" style="width: 3em; text-align: center;">2</span>
             </fieldset>
         </fieldset>
     </fieldset>
@@ -47,19 +52,45 @@
     <!-- The magic begins here -->
     <script>
 
-        // Setup
+        // Inputs & variables
 
-        let context, analyser, source
+        let context, analyser, source, gainnode
         let isplaying = false;
         const databuffer = new Float32Array(1024)
         const svg_volume_elem = document.querySelector("#svg-volume")
+
+        // The smoothing factor is used to make the visible volume go back a little bit slower when the volume suddenly decreases.
+        const smoothing_factor_slider = document.querySelector("#smoothing_factor_slider")
+        const smoothing_factor_display = document.querySelector("#smoothing_factor_display")
+        var smoothing_factor = 0.9
+        smoothing_factor_slider.addEventListener("input", function () {
+            smoothing_factor = smoothing_factor_slider.value
+            smoothing_factor_display.innerHTML = smoothing_factor
+        })
+
+        // The gain is used to amplify the input volume.
+        const gain_slider = document.querySelector("#gain_slider")
+        const gain_display = document.querySelector("#gain_display")
+        var gain = 2
+        gain_slider.addEventListener("input", function () {
+            gain = gain_slider.value
+            gain_display.innerHTML = gain
+
+            if (gainnode) {
+                gainnode.gain.value = gain
+            }
+        })
+
+        // Setup
 
         function setUpAudioContext() {
             context = new AudioContext();
             analyser = context.createAnalyser()
             analyser.ftSize = 1024
+            gainnode = new GainNode(context, { gain: gain})
+            gainnode.connect(analyser)
         }
-        
+
         // Utils
 
         function setButtonStates(states) {
@@ -87,12 +118,7 @@
 
             const micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false })
             source = context.createMediaStreamSource(micStream);
-
-            // Amplify the input volume
-            const gainNode = new GainNode(context, { gain: 2 })
-            console.log(gainNode)
-            source.connect(gainNode)
-            gainNode.connect(analyser)
+            source.connect(gainnode)
 
             isplaying = true;
             updateFrame()
@@ -110,7 +136,7 @@
             const myAudio = document.querySelector('audio');
             myAudio.play()
             source = context.createMediaElementSource(myAudio);
-            source.connect(analyser)
+            source.connect(gainnode)
             analyser.connect(context.destination)
             myAudio.currentTime = 37;
 
@@ -127,15 +153,6 @@
         }
 
         // Visualization
-
-        // The smoothing factor is used to make the visible volume go back a little bit slower when the volume suddenly decreases.
-        let smoothing_factor_slider = document.querySelector("#smoothing_factor_slider")
-        let smoothing_factor_display = document.querySelector("#smoothing_factor_display")
-        var smoothing_factor = 0.9
-        smoothing_factor_slider.addEventListener("input", function() {
-            smoothing_factor = smoothing_factor_slider.value
-            smoothing_factor_display.innerHTML = smoothing_factor
-        })
 
         // The value from the latest function call. (used for smoothing)
         let latest_value = 0;
@@ -188,7 +205,6 @@
 
         // TODO:
         // Replace buttons with icons -> mic/stop icon / play/stop icon
-        // Add display for smoothing factor slider
         // Add slider for microphone gain
         // Add decoration around circles or use another shape
         // Add more audio examples -> add select box for audio files
