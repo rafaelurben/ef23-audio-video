@@ -62,7 +62,8 @@
         // The smoothing factor is used to make the visible volume go back a little bit slower when the volume suddenly decreases.
         const smoothing_factor_slider = document.querySelector("#smoothing_factor_slider")
         const smoothing_factor_display = document.querySelector("#smoothing_factor_display")
-        var smoothing_factor = 0.9
+        var smoothing_factor = smoothing_factor_slider.value
+        smoothing_factor_display.innerHTML = smoothing_factor
         smoothing_factor_slider.addEventListener("input", function () {
             smoothing_factor = smoothing_factor_slider.value
             smoothing_factor_display.innerHTML = smoothing_factor
@@ -71,7 +72,8 @@
         // The gain is used to amplify the input volume.
         const gain_slider = document.querySelector("#gain_slider")
         const gain_display = document.querySelector("#gain_display")
-        var gain = 2
+        var gain = gain_slider.value
+        gain_display.innerHTML = gain
         gain_slider.addEventListener("input", function () {
             gain = gain_slider.value
             gain_display.innerHTML = gain
@@ -137,7 +139,7 @@
             myAudio.play()
             source = context.createMediaElementSource(myAudio);
             source.connect(gainnode)
-            analyser.connect(context.destination)
+            gainnode.connect(context.destination) // Replace gainnode with source to not apply gain to "real" output
             myAudio.currentTime = 37;
 
             isplaying = true;
@@ -204,11 +206,11 @@
         }
 
         // TODO:
-        // Replace buttons with icons -> mic/stop icon / play/stop icon
-        // Add slider for microphone gain
+        // Add icons -> mic/stop icon / play/stop icon
         // Add decoration around circles or use another shape
         // Add more audio examples -> add select box for audio files
         // Add an option to use own audio file: https://stackoverflow.com/questions/43710173/upload-and-play-audio-file-js#43710640
+        // Add option to record audio
 
     </script>
 </body>
