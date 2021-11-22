@@ -48,6 +48,10 @@ fieldset {
     margin: 0.5em;
 }
 
+.flex100 {
+    flex: 100%;
+}
+
 #controls-container {
     padding: 0 0.5em 0.5em 0.5em;
 }

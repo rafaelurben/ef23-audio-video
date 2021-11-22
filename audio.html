@@ -26,6 +26,11 @@
             <button id="startFileButton" class="flex40" onclick="startFile();">Start Audio File</button>
             <button id="stopFileButton" class="flex40" onclick="stopFile();" disabled>Stop Audio File</button>
         </fieldset>
+        <fieldset class="borderbox flex flex100">
+            <legend>Options</legend>
+            <span>Smoothing factor:&nbsp;&nbsp;</span>
+            <input id="slider_smoothing_factor" type="range" min="0" max="0.99" step="0.01" value="0.9">
+        </fieldset>
     </fieldset>
     
     <fieldset id="output-container" class="borderbox">
@@ -120,14 +125,16 @@
 
         // Visualization
 
-        // The smoothing factor is used to make the visible volume go back a little bit slower when the volume suddenly decreases.
-        let smoothing_factor = 0.9;
+        let slider_smoothing_factor = document.querySelector("#slider_smoothing_factor")
 
         // The value from the latest function call. (used for smoothing)
         let latest_value = 0;
 
         function showData(data) {
             svg_volume_elem.innerHTML = "";
+
+            // The smoothing factor is used to make the visible volume go back a little bit slower when the volume suddenly decreases.
+            let smoothing_factor = slider_smoothing_factor.value;
 
             let sum = 0;
             data.forEach(d => sum += d);
@@ -174,7 +181,7 @@
 
         // TODO:
         // Replace buttons with icons -> mic/stop icon / play/stop icon
-        // Add slider for smoothing factor
+        // Add display for smoothing factor slider
         // Add slider for microphone gain
         // Add decoration around circles or use another shape
         // Add more audio examples -> add select box for audio files
