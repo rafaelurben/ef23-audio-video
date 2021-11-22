@@ -28,8 +28,11 @@
         </fieldset>
         <fieldset class="borderbox flex flex100">
             <legend>Options</legend>
-            <span>Smoothing factor:&nbsp;&nbsp;</span>
-            <input id="slider_smoothing_factor" type="range" min="0" max="0.99" step="0.01" value="0.9">
+            <fieldset class="borderbox flex">
+                <legend>Smoothing factor</legend>
+                <input id="smoothing_factor_slider" type="range" min="0" max="0.99" step="0.01" value="0.9">
+                <span id="smoothing_factor_display" style="width: 3em;text-align: center;">0.9</span>
+            </fieldset>
         </fieldset>
     </fieldset>
     
@@ -125,16 +128,20 @@
 
         // Visualization
 
-        let slider_smoothing_factor = document.querySelector("#slider_smoothing_factor")
+        // The smoothing factor is used to make the visible volume go back a little bit slower when the volume suddenly decreases.
+        let smoothing_factor_slider = document.querySelector("#smoothing_factor_slider")
+        let smoothing_factor_display = document.querySelector("#smoothing_factor_display")
+        var smoothing_factor = 0.9
+        smoothing_factor_slider.addEventListener("input", function() {
+            smoothing_factor = smoothing_factor_slider.value
+            smoothing_factor_display.innerHTML = smoothing_factor
+        })
 
         // The value from the latest function call. (used for smoothing)
         let latest_value = 0;
 
         function showData(data) {
             svg_volume_elem.innerHTML = "";
-
-            // The smoothing factor is used to make the visible volume go back a little bit slower when the volume suddenly decreases.
-            let smoothing_factor = slider_smoothing_factor.value;
 
             let sum = 0;
             data.forEach(d => sum += d);

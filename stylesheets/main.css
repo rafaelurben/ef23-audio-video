@@ -34,26 +34,28 @@ html {
     background-color: rgb(55, 55, 55);
 }
 
-fieldset {
+fieldset.borderbox {
     border-radius: 5px;
 }
 
 .flex {
     display: flex;
     flex-wrap: wrap;
-    margin: 0.5em;
 }
 
 .flex40 {
     flex: 40%;
+    margin: 0.5em;
 }
 
 .flex100 {
     flex: 100%;
+    margin: 0.5em;
 }
 
 #controls-container {
     padding: 0 0.5em 0.5em 0.5em;
+    margin-bottom: 1em;
 }
 
 #svg-volume {
