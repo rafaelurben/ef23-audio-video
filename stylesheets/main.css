@@ -63,3 +63,13 @@ fieldset.borderbox {
 #svg-volume {
     width: 100%;
 }
+
+legend abbr {
+    padding: 0 0.5em 0 0.25em;
+    transition-duration: 0.3s;
+}
+
+legend abbr:hover {
+    cursor: help;
+    color: rgb(199, 199, 199);
+}

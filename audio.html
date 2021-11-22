@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Audio experiment</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./stylesheets/main.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
 </head>
 
 <body>
@@ -17,24 +19,44 @@
     <fieldset id="controls-container" class="borderbox flex">
         <legend>Controls</legend>
         <fieldset class="borderbox flex flex40 m05">
-            <legend>Microphone</legend>
+            <legend>
+                Microphone 
+                <abbr title="Use these buttons to work with your microphone as an input device.">
+                    <i class="fas fa-question-circle"></i>
+                </abbr>
+            </legend>
             <button id="startMicButton" class="flex40 m05" onclick="startMic();">Activate Microphone</button>
             <button id="stopMicButton" class="flex40 m05" onclick="stopMic();" disabled>Stop Microphone</button>
         </fieldset>
         <fieldset class="borderbox flex flex40 m05">
-            <legend>Audio file</legend>
+            <legend>
+                Audio file
+                <abbr title="Use these buttons to work with an audio file as an input.">
+                    <i class="fas fa-question-circle"></i>
+                </abbr>
+            </legend>
             <button id="startFileButton" class="flex40 m05" onclick="startFile();">Start Audio File</button>
             <button id="stopFileButton" class="flex40 m05" onclick="stopFile();" disabled>Stop Audio File</button>
         </fieldset>
         <fieldset class="borderbox flex flex100 m05">
             <legend>General</legend>
             <fieldset class="borderbox flex m05">
-                <legend>Smoothing factor</legend>
+                <legend>
+                    Smoothing factor
+                    <abbr title="The smoothing factor is used to provide a smoother animation. There's usually no reason to change the default value of 0.9.">
+                        <i class="fas fa-question-circle"></i>
+                    </abbr>
+                </legend>
                 <input id="smoothing_factor_slider" type="range" min="0" max="0.99" step="0.01" value="0.9">
                 <span id="smoothing_factor_display" style="width: 3em; text-align: center;">0.9</span>
             </fieldset>
             <fieldset class="borderbox flex m05">
-                <legend>Gain</legend>
+                <legend>
+                    Volume (gain)
+                    <abbr title="Use this slider to modify the amplification of the input.">
+                        <i class="fas fa-question-circle"></i>
+                    </abbr>
+                </legend>
                 <input id="gain_slider" type="range" min="0" max="10" step="0.1" value="2">
                 <span id="gain_display" style="width: 3em; text-align: center;">2</span>
             </fieldset>
@@ -42,7 +64,12 @@
     </fieldset>
     
     <fieldset id="output-container" class="borderbox">
-        <legend>Output</legend>
+        <legend>
+            Output
+            <abbr title="If everything works fine in your browser, you should see colored dots displaying your input volume in this area after you activate the microphone or start an audio file.">
+                <i class="fas fa-question-circle"></i>
+            </abbr>
+        </legend>
         <svg id="svg-volume" viewBox="0 0 1000 10" xmlns="http://www.w3.org/2000/svg">
 
         </svg>
