@@ -41,11 +41,11 @@ fieldset {
 .flex {
     display: flex;
     flex-wrap: wrap;
+    margin: 0.5em;
 }
 
 .flex40 {
     flex: 40%;
-    margin: 0.5em;
 }
 
 .flex100 {
