@@ -36,7 +36,7 @@
                 </abbr>
             </legend>
             <button id="startFileButton" class="flex40 m05" onclick="startFile();">Start Audio File</button>
-            <button id="stopFileButton" class="flex40 m05" onclick="stopFile();" disabled>Stop Audio File</button>
+            <button id="stopFileButton" class="flex40 m05" onclick="stopFile();" disabled>Play Audio File</button>
         </fieldset>
         <fieldset class="borderbox flex flex100 m05">
             <legend>General</legend>
@@ -53,6 +53,19 @@
             </fieldset>
             <fieldset class="borderbox flex m05">
                 <legend>
+                    Display mode
+                    <abbr title="Choose metween multiple gain display modes">
+                        <i class="fas fa-question-circle"></i>
+                    </abbr>
+                </legend>
+                <select id="displaymode_selector" value="circles">
+                    <option value="circles">Circles</option>
+                    <option value="rect">Rectangle</option>
+                    <option value="bars">Bars</option>
+                </select>
+            </fieldset>
+            <fieldset class="borderbox flex m05">
+                <legend>
                     Volume (gain)
                     <abbr title="Use this slider to modify the amplification of the input.">
                         <i class="fas fa-question-circle"></i>
@@ -66,20 +79,19 @@
 
     <fieldset id="output-container" class="borderbox">
         <legend>
-            Output
+            Input volume
             <abbr
                 title="If everything works fine in your browser, you should see colored dots displaying your input volume in this area after you activate the microphone or start an audio file.">
                 <i class="fas fa-question-circle"></i>
             </abbr>
         </legend>
-        <svg id="svg-volume" viewBox="0 0 1000 10" xmlns="http://www.w3.org/2000/svg">
+        <svg id="svg-volume" viewBox="0 0 1000 20" xmlns="http://www.w3.org/2000/svg">
 
         </svg>
     </fieldset>
 
     <!--
         TODO:
-        - Different display modes (circle, rect, ...)
         - Add more audio examples -> add select box for audio files
         - Add an option to use own audio file: https://stackoverflow.com/questions/43710173/upload-and-play-audio-file-js#43710640
         - Add option to record audio

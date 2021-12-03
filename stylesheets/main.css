@@ -8,10 +8,17 @@ a[href]:hover {
     color: #afafaf;
 }
 
+input, button, a.btn, select {
+    cursor: pointer
+}
+
 button, a.btn {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
+}
+
+button, a.btn, select {
     transition-duration: 0.3s;
     padding: 8px;
     text-align: center;

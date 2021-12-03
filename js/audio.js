@@ -33,6 +33,9 @@ gain_slider.addEventListener("input", function () {
     }
 })
 
+// Display mode
+const displaymode_selector = document.querySelector("#displaymode_selector")
+
 // Setup
 
 function setUpAudioContext() {
@@ -114,26 +117,42 @@ function showData(data) {
 
     let sum = 0;
     data.forEach(d => sum += d);
-    latest_value = Math.max(sum, latest_value * smoothing_factor)
 
-    for (let i = 0; i < Math.min(latest_value * 8, 90); i++) {
-        let mode = "circle";
-        let color = `hsl(${Math.max(130 - (i * 3), 0)},100%,35%)`;
-        if (mode === "circle") {
+    latest_value = Math.max(sum, latest_value * smoothing_factor)
+    let value = Math.min(latest_value * 8, 90)
+
+    let mode = displaymode_selector.value;
+    if (mode === "circles") {
+        for (let i = 0; i < value; i++) {
             let circle = document.createElement("circle");
-            circle.setAttribute("fill", color)
+            circle.setAttribute("fill", `hsl(${Math.max(130 - (i * 3), 0)},100%,35%)`)
             circle.setAttribute("r", 5)
             circle.setAttribute("cx", 11 * (i) + 5)
             circle.setAttribute("cy", 5)
             svg_volume_elem.appendChild(circle);
         }
+    } else if (mode === "bars") {
+        for (let i = 0; i < value; i++) {
+            let rect = document.createElement("rect");
+            rect.setAttribute("fill", `hsl(${Math.max(130 - (i * 3), 0)},100%,35%)`)
+            rect.setAttribute("x", 11 * (i) + 2)
+            rect.setAttribute("y", 0)
+            rect.setAttribute("height", 20)
+            rect.setAttribute("width", 8)
+            svg_volume_elem.appendChild(rect);
+        }
+    } else if (mode === "rect") {
+        let rect = document.createElement("rect");
+        rect.setAttribute("fill", `hsl(${Math.max(130 - (Math.max(value-10, 0) * 2), 0)},100%,35%)`)
+        rect.setAttribute("x", "0")
+        rect.setAttribute("y", "0")
+        rect.setAttribute("height", 20)
+        rect.setAttribute("width", 11 * value)
+        svg_volume_elem.appendChild(rect);
     }
 
-    // Without this line, JS doesn't rerender the SVG. I don't know why neither understand why this line changes anything.
+    // Without this line, JS doesn't rerender the SVG. I neither know nor understand why this line changes anything.
     svg_volume_elem.innerHTML += "";
-
-    // Debug
-    // outputelem.innerHTML += `<p><br>${data.join("<br>")}<br><br>${Math.max(...data)}<br>${sum}<p>`;
 }
 
 function updateFrame() {
